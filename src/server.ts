@@ -1,6 +1,22 @@
-import express, { Application, Request, Response } from 'express'
-const app:Application = express()
-const port:number = 3000
+import express, { Express, Request, Response } from 'express'
+import { PORT } from './secrets'
+import rootRouter from './routes';
+import { PrismaClient } from '@prisma/client';
+import { errorMiddleware } from './middlewares/error';
+import { SignUpSchema } from './schema/users';
 
-app.get('/', (req:Request, res:Response) => res.send("Welcome"))
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+export const prisma = new PrismaClient({
+    log:['query']
+})
+
+const app:Express = express()
+
+app.use(express.json());
+
+
+app.use('/api', rootRouter)
+
+app.use(errorMiddleware)
+
+app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`))
+
